@@ -49,14 +49,17 @@ printf("Size of int32_t* is %lu \n" ,(unsigned long) sizeof(int32_t *));
  scanf("%99[^\n]",string);
  len = strlen(string);
  
+ printf("Entered string is: %s\n", string);
+
+  
  revstring = reverse_string((char *) string, len);
 
  if(!revstring)
  {
-  printf("the reverse string is: %s\n", string);
+  printf("The reverse of entered string is: %s\n", string);
  }
  else
  {
- printf("wrong string or invalid length");}
+ printf("Wrong string or invalid length");}
  return 0;
 }
