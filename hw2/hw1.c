@@ -2,16 +2,16 @@
 
 char reverse_string(char * str, int length) 
 {
-	int index = 0;
+	int i = 0;
 	char temp;
-	while (index<length / 2)
+	while (i < length / 2)
 	{
-		temp = *(str + index);
-		*(str + index) = *(str + length - index - 1);
-		*(str + length - index - 1) = temp;
-		index++;
+		temp = *(str + i);
+		*(str + i) = *(str + length - i - 1);
+		*(str + length - i - 1) = temp;
+		i++;
 	}
-	if (index == (length/2)) 
+	if (i == (length/2)) 
 	{
 		return 0;
 	}
