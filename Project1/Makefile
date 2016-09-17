@@ -1,2 +1,5 @@
-revstring : revstr.c hw1.c
-	gcc -o revstr revstr.c hw1.c -I.
+CC=gcc
+CFLAGS=-I.
+
+revstring: revstr.o hw1.o
+	$(CC) -o revstring revstr.o hw1.o $(CFLAGS)
