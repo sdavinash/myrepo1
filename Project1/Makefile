@@ -1,12 +1,13 @@
 CC = gcc
 IDIR = hdrdir
-CFLAGS = -I$(IDIR)
+CFLAGS = -I$(IDIR) -g -O0 -Wall
+
 
 DEPS = $(IDIR)/hw1.h
-OBJS = ($(ODIR)/revstr.o $(ODIR)/hw1.o)
-PPFS = ($(PDIR)/revstr.i $(PDIR)/hw1.i)
-ASMS = ($(ADIR)/revstr.s $(ADIR)/hw1.s)
-SRC = ($(SDIR)/revstr.c $(SDIR)/hw1.c)
+OBJS = $(ODIR)/revstr.o $(ODIR)/hw1.o
+PPFS = $(PDIR)/revstr.i $(PDIR)/hw1.i
+ASMS = $(ADIR)/revstr.s $(ADIR)/hw1.s
+SRC = $(SDIR)/revstr.c $(SDIR)/hw1.c
 
 ODIR = objdir/
 SDIR = srcdir
@@ -31,6 +32,16 @@ $(ADIR)%.s: $(SDIR)%.c $(DEPS)
 asm.s: $(ASMS)
 	$(CC) -o $@ $^ $(CFLAGS)
 
-compile_all: $(SRC) 
-	$(CC) -c -o %.o $^ $(CFLAGS)
+compile_all: $(SDIR)%.c
+	$(CC) -c $^ -o $(ODIR) $(CFLAGS)
+
+upload: build
+	scp build root@192.168.7.2:/home/debian/bin
+
+
+
+.PHONY: compile_all clean
+
+clean:
+	rm $(ODIR)*.o $(PDIR)*.i $(ADIR)*.s 
 

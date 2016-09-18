@@ -42,7 +42,7 @@ printf("Size of int8_t* is %lu \n" ,(unsigned long) sizeof(int8_t *));
 printf("Size of int16_t* is %lu \n" ,(unsigned long) sizeof(int16_t *));
 printf("Size of int32_t* is %lu \n" ,(unsigned long) sizeof(int32_t *));
 
- int len=0, i=0;
+ int len=0;
  char revstring, string[100];
 
  printf("Please enter the string \n");
