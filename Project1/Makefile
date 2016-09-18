@@ -1,53 +1,36 @@
-CFLAGS = -I.
-DEPS = hw1.h
-OBJ = revstr.o hw1.o
-SRC = revstr.c hw1.c
+CC = gcc
+IDIR = hdrdir
+CFLAGS = -I$(IDIR)
+
+DEPS = $(IDIR)/hw1.h
+OBJS = ($(ODIR)/revstr.o $(ODIR)/hw1.o)
+PPFS = ($(PDIR)/revstr.i $(PDIR)/hw1.i)
+ASMS = ($(ADIR)/revstr.s $(ADIR)/hw1.s)
+SRC = ($(SDIR)/revstr.c $(SDIR)/hw1.c)
+
+ODIR = objdir/
+SDIR = srcdir
+PDIR = predir/
+ADIR = asmdir/
+
+include sources.mk
 
 
-ifeq ($(CC),host)
-file.i: $(SRC) $(DEPS)
-	gcc -E -o $@ $< $(CFLAGS)
+$(ODIR)%.o: $(SDIR)%.c $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS)
+build : $(OBJS)	
+	$(CC) -o $@ $^ $(CFLAGS)
 
-%.o: $(SRC) $(DEPS)
-	gcc -c -o $@ $< $(CFLAGS)
+$(PDIR)%.i: $(SDIR)%.c $(DEPS)
+	$(CC) -E -o $@ $< $(CFLAGS)
+file.i: $(PPFS)
+	$(CC) -o $@ $^ $(CFLAGS)
 
-file.s: $(SRC) $(DEPS)
-	gcc -S -o $@ $< $(CFLAGS)
+$(ADIR)%.s: $(SDIR)%.c $(DEPS)
+	$(CC) -S -o $@ $< $(CFLAGS)
+asm.s: $(ASMS)
+	$(CC) -o $@ $^ $(CFLAGS)
 
-build: $(OBJ)
-	gcc -o $@ $^ $(CFLAGS)
+compile_all: $(SRC) 
+	$(CC) -c -o %.o $^ $(CFLAGS)
 
-else ifeq ($(CC),bbb)
-file.i: %.c $(DEPS)
-	arm-linux-gnueabihf-gcc -E -o $@ $< $(CFLAGS)
-
-file.s: %.c $(DEPS)
-	arm-linux-gnueabihf-gcc -S -o $@ $< $(CFLAGS)
-	
-%.o: %.c $(DEPS)
-	arm-linux-gnueabihf-gcc -c -o $@ $< $(CFLAGS)
-
-build: $(OBJ)
-	arm-linux-gnueabihf-gcc -o $@ $^ $(CFLAGS)
-
-else ifeq ($(CC),frdm)
-file.i: %.c $(DEPS)
-	arm-none-eabi-gcc -E -o $@ $< $(CFLAGS)
-
-file.s: %.c $(DEPS)
-	arm-none-eabi-gcc -S -o $@ $< $(CFLAGS)
-
-%.o: %.c $(DEPS)
-	arm-none-eabi-gcc -c -o $@ $< $(CFLAGS)
-
-build: $(OBJ)
-	arm-none-eabi-gcc -o $@ $^ $(CFLAGS)
-else
-.PHONY: print 
-print:
-	@echo "Please enter a compiler name as either of host or bbb or frdm"	
-endif
-
-.PHONY: print clean
-clean:
-	rm *.o *.i *.s build
