@@ -1,47 +1,65 @@
-CC = gcc
 IDIR = hdrdir
-CFLAGS = -I$(IDIR) -g -O0 -Wall
+CC = gcc
+CFLAGS = -I$(IDIR) -MMD -g
+CCFLAGS = -O0 -Wall $(CFLAGS)
+LDFLAGS = -Wl,-Map,output.map
 
 
-DEPS = $(IDIR)/hw1.h
+
 OBJS = $(ODIR)/revstr.o $(ODIR)/hw1.o
 PPFS = $(PDIR)/revstr.i $(PDIR)/hw1.i
 ASMS = $(ADIR)/revstr.s $(ADIR)/hw1.s
 SRC = $(SDIR)/revstr.c $(SDIR)/hw1.c
 
 ODIR = objdir/
-SDIR = srcdir
+SDIR = srcdir/
 PDIR = predir/
 ADIR = asmdir/
 
-include sources.mk
+-include sources.mk
 
 
-$(ODIR)%.o: $(SDIR)%.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+ifeq ($(trgt),bbb)
+	CC = arm-linux-gnueabihf-gcc
+else ifeq ($(trgt),frdm)
+	CC = arm-none-eabi-gcc
+endif
+
+
+
+$(ODIR)%.o: $(SDIR)%.c 
+	$(CC) -c -o $@ $< $(CCFLAGS)
 build : $(OBJS)	
-	$(CC) -o $@ $^ $(CFLAGS)
+	$(CC) -o $@ $^ $(CCFLAGS) $(LDFLAGS)
+	@echo "size of the executable"
+	du -h $@
+	objdump -Sx build > build.asm
 
-$(PDIR)%.i: $(SDIR)%.c $(DEPS)
-	$(CC) -E -o $@ $< $(CFLAGS)
+$(PDIR)%.i: $(SDIR)%.c
+	$(CC) -E -o $@ $< $(CCFLAGS)
 file.i: $(PPFS)
-	$(CC) -o $@ $^ $(CFLAGS)
+	$(CC) -o $@ $^ $(CCFLAGS)
+	@echo "size of the preprocesses file"
+	du -h $@
 
-$(ADIR)%.s: $(SDIR)%.c $(DEPS)
-	$(CC) -S -o $@ $< $(CFLAGS)
-asm.s: $(ASMS)
-	$(CC) -o $@ $^ $(CFLAGS)
+$(ADIR)%.s: $(SDIR)%.c
+	$(CC) -S -o $@ $< $(CCFLAGS)
+file.s: $(ASMS)
+	$(CC) -o $@ $^ $(CCFLAGS)
+	@echo "size of the asm file"
+	du -h $@
 
-compile_all: $(SDIR)%.c
-	$(CC) -c $^ -o $(ODIR) $(CFLAGS)
+compile_all:
+	
 
 upload: build
 	scp build root@192.168.7.2:/home/debian/bin
 
 
 
-.PHONY: compile_all clean
+
+.PHONY: compile_all clean build file.i file.s upload compile_all objdump
 
 clean:
-	rm $(ODIR)*.o $(PDIR)*.i $(ADIR)*.s 
+	rm -f $(ODIR)*.o $(PDIR)*.i $(ADIR)*.s build  file.* *.map *.asm
 
