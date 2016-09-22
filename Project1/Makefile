@@ -4,23 +4,19 @@ CFLAGS = -I$(IDIR) -MMD -g
 CCFLAGS = -O0 -Wall $(CFLAGS)
 LDFLAGS = -Wl,-Map,output.map
 
+odump = objdump
 
-
-OBJS = $(ODIR)/revstr.o $(ODIR)/hw1.o
-PPFS = $(PDIR)/revstr.i $(PDIR)/hw1.i
-ASMS = $(ADIR)/revstr.s $(ADIR)/hw1.s
-SRC = $(SDIR)/revstr.c $(SDIR)/hw1.c
-
-ODIR = objdir/
-SDIR = srcdir/
-PDIR = predir/
-ADIR = asmdir/
+VPATH = srcdir/
 
 -include sources.mk
 
+OBJS = ${SRC:.c=.o}
+PPFS = ${SRC:.c=.i}
+ASMS = ${SRC:.c=.s}
 
 ifeq ($(trgt),bbb)
 	CC = arm-linux-gnueabihf-gcc
+	
 else ifeq ($(trgt),frdm)
 	CC = arm-none-eabi-gcc
 endif
@@ -28,12 +24,12 @@ endif
 
 
 $(ODIR)%.o: $(SDIR)%.c 
-	$(CC) -c -o $@ $< $(CCFLAGS)
+	$(CC) -c $< -o $@  $(CCFLAGS)
 build : $(OBJS)	
-	$(CC) -o $@ $^ $(CCFLAGS) $(LDFLAGS)
+	$(CC) -o project $^ $(CCFLAGS) $(LDFLAGS)
 	@echo "size of the executable"
-	du -h $@
-	objdump -Sx build > build.asm
+	du -h project
+	
 
 $(PDIR)%.i: $(SDIR)%.c
 	$(CC) -E -o $@ $< $(CCFLAGS)
@@ -49,11 +45,11 @@ file.s: $(ASMS)
 	@echo "size of the asm file"
 	du -h $@
 
-compile_all:
-	
+compile_all: $(SRC)
+	$(CC) -c -o $(ODIR) $< $(CCFLAGS)
 
 upload: build
-	scp build root@192.168.7.2:/home/debian/bin
+	scp project root@192.168.7.2:/home/debian/bin
 
 
 
@@ -61,5 +57,5 @@ upload: build
 .PHONY: compile_all clean build file.i file.s upload compile_all objdump
 
 clean:
-	rm -f $(ODIR)*.o $(PDIR)*.i $(ADIR)*.s build  file.* *.map *.asm
+	rm -f $(SDIR)*.o $(SDIR)*.d $(PDIR)*.i $(PDIR)*.d $(ADIR)*.s $(ADIR)*.d project  *.map $(SDIR)*.asm 
 
