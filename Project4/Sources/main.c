@@ -28,22 +28,37 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "MKL25Z4.h"
+#include "main.h"
 
-static int i = 0;
 
 int main(void)
 {
+	float temp;
+	led_init();
+	uart_init(BAUD_RATE);
 
-    /* Write your code here */
 
-    /* This for loop should be replaced. By default this loop allows a single stepping. */
-    for (;;) {
-        i++;
-    }
-    /* Never leave main */
-    return 0;
+	 I2C_Init_Temp();
+	/*start the temperature conversion*/
+		start_Temperature_Conversion();
+
+		LOG_0("\n\rEngine temperature ");
+		temp = read_Temperature();
+		//Log temp on UART
+		LOG_2("\n\rTemperature = ",temp);
+		LOG_0(" degree Celsius");
+
+	while(1){
+	uint8_t value = fall_calculation();
+	if (value){
+		//LOG_1("\n\rFF_MT_SRC_REG value");
+		LOG_0("\n\rCAUTION: Free-fall detected");
+	}
+	else if(!value){
+		//LOG_1("\n\rStatus REG  value : ",value);
+		LOG_0("\n\rFlight Normal");
+	}
+	}
+
+	return 0;
 }
-////////////////////////////////////////////////////////////////////////////////
-// EOF
-////////////////////////////////////////////////////////////////////////////////

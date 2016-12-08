@@ -4,7 +4,7 @@
 #include "main.h"
 
 
-#define ACCEL_DEVICE_I2C_ADDRESS		0x1D			/*ACCELEROMETER DEVICE ADDRESS*/
+#define ACCEL_DEVICE_I2C_ADDRESS		(0x1D<<1)			/*ACCELEROMETER DEVICE ADDRESS*/
 #define I2C0_B  						I2C0_BASE_PTR
 
 
@@ -33,13 +33,14 @@
 
 /**********************************************/
 
-#define ACCEL_CRTL_REG_VALUE		0x1D
+#define ACCEL_CRTL_REG_VALUE		0x01
 #define ACCEL_XYZ_DATA_CFG			0x01
 #define ACCEL_INTR_ENABLE			0x04
 #define ACCEL_INTR_CONFIG			0x04
 #define ACCEL_FF_MT_CFG				0xA0
-#define ACCEL_FF_MT_THS				0x10
-#define ACCEL_FF_MT_CNT				0x32
+#define ACCEL_FF_MT_THS				0x03
+#define ACCEL_FF_MT_CNT				0xC8
+#define ACCEL_FF_MT_SRC				0xA0
 
 
 void Init_I2C_Accel(void); 							//Prepare I2C0 at PORT_E

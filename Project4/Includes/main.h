@@ -14,8 +14,13 @@
 #include "I2C.h"
 #include "accelerometer.h"
 #include "fall_calculation.h"
+#include "led.h"
+#include "logger.h"
+#include "uart.h"
+#include "ds1631.h"
+#include "nvic.h"
 
-
+#define LOG
 
 
 #endif /* INCLUDES_MAIN_H_ */

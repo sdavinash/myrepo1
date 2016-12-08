@@ -11,7 +11,7 @@
 #define INCLUDES_FALL_CALCULATION_H_
 
 void Accel_init(void);			/*Accelerometer initialization*/
-void Accel_Data_Read(void);
+uint8_t Accel_Data_Read(void);
 
 extern int16_t resultx, resulty, resultz;
 
